@@ -8,101 +8,82 @@ import { moveItem } from "../services/Inventory/moveItem";
 import { response } from "express";
 class InventoryController {
   static sendError(res, error: any) {
-    res.status(error.status);
-    res.send(error.message);
+    res.status(error.status).send(error.message);
   }
 
-  static create(req, res) {
+  static async create(req, res) {
     const { itemName, amount } = req.body;
-
-    createItem(itemName, amount)
-      .then((response) => {
-        res.send(response);
-      })
-      .catch((error) => {
-        this.sendError(res, error);
-      });
+    try {
+      const response = await createItem(itemName, amount);
+      res.send(response);
+    } catch (err) {
+      this.sendError(res, err);
+    }
   }
 
   static async get(req, res) {
-    const itemId = req.params.itemId;
-
-    getItem(itemId)
-      .then((response) => {
-        res.send(response);
-      })
-      .catch((error) => {
-        this.sendError(res, error);
-      });
-  }
-
-  static update(req, res) {
-    const { itemName, amount } = req.body;
-    const itemId = req.params.itemId;
-    getItem(itemId)
-      .then(() => {
-        updateItem(itemId, itemName, amount)
-          .then((response) => {
-            res.send(response);
-          })
-          .catch((error) => {
-            this.sendError(res, error);
-          });
-      })
-      .catch((error) => {
-        this.sendError(res, error);
-      });
-  }
-
-  static delete(req, res) {
-    const itemId = req.params.itemId;
-    getItem(itemId)
-      .then(() => {
-        deleteItem(itemId)
-          .then((response) => {
-            res.send(response);
-          })
-          .catch((error) => {
-            this.sendError(res, error);
-          });
-      })
-      .catch((error) => {
-        this.sendError(res, error);
-      });
-  }
-
-  static list(req, res) {
-    getList().then((response) => {
+    const itemId = parseInt(req.params.itemId);
+    try {
+      const response = await getItem(itemId);
       res.send(response);
-    });
+    } catch (err) {
+      this.sendError(res, err);
+    }
   }
 
-  static deleteAll(req, res) {
-    deleteItems()
-      .then((response) => {
-        res.send(response);
-      })
-      .catch((error) => {
-        this.sendError(res, error);
-      });
+  static async update(req, res) {
+    const { itemName, amount } = req.body;
+    const itemId = parseInt(req.params.itemId);
+    try {
+      await getItem(itemId);
+      const response = updateItem(itemId, itemName, parseInt(amount));
+      res.send(response);
+    } catch (error) {
+      console.log("ERROR");
+      this.sendError(res, error);
+    }
   }
 
-  static move(req, res) {
-    const itemId = req.params.itemId;
+  static async delete(req, res) {
+    const itemId = parseInt(req.params.itemId);
+    try {
+      await getItem(itemId);
+      const response = await deleteItem(itemId);
+      res.send(response);
+    } catch (error) {
+      this.sendError(res, error);
+    }
+  }
+
+  static async list(req, res) {
+    try {
+      const response = await getList();
+      res.send(response);
+    } catch (error) {
+      this.sendError(res, error);
+    }
+  }
+
+  static async deleteAll(req, res) {
+    try {
+      const response = await deleteItems();
+      res.send(response);
+    } catch (error) {
+      this.sendError(res, error);
+    }
+  }
+
+  static async move(req, res) {
+    const itemId = parseInt(req.params.itemId);
     const { warehouseId } = req.body;
-    getItem(itemId)
-      .then(() => {
-        moveItem(itemId, warehouseId)
-          .then((response) => {
-            res.send(response);
-          })
-          .catch((error) => {
-            this.sendError(res, error);
-          });
-      })
-      .catch((error) => {
-        this.sendError(res, error);
-      });
+
+    try {
+      await getItem(itemId);
+      const response = await moveItem(itemId, parseInt(warehouseId));
+      res.send(response);
+    } catch (error) {
+      this.sendError(res, error);
+    }
   }
 }
 

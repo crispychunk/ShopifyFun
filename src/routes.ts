@@ -33,7 +33,7 @@ export function loadRoutes(app) {
   app.post("/warehouse", (req, res) => {
     warehouseController.create(req, res);
   });
-  app.delete("/warehouse", (req, res) => {
+  app.delete("/warehouse/:warehouseId", (req, res) => {
     warehouseController.delete(req, res);
   });
 
@@ -41,7 +41,7 @@ export function loadRoutes(app) {
     warehouseController.get(req, res);
   });
 
-  app.get("/warehouse", (req, res) => {
+  app.get("/warehouses", (req, res) => {
     warehouseController.list(req, res);
   });
 }

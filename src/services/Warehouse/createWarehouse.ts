@@ -1,22 +1,21 @@
 import database from "../../database";
-import { createWarehouseResponse } from "../../serializer/warehouseSerializer";
-import { HttpError } from "../../serializer/baseSerializer";
+import { createWarehouseResponse } from "../../serializer/warehouseResponse";
+import { HttpError } from "../../serializer/baseResponse";
 
 const SQL = "INSERT INTO warehouse(warehouse_id,name, location) VALUES(?,?,?)";
 let warehouseCount = 1;
-const db = database.getInstance().getSqlDatabase();
+const db = database.getInstance();
 
-export function createWarehouse(name: string, location: string) {
-  return new Promise((resolve, reject) => {
-    if (name == undefined || location == undefined) {
-      return reject(new HttpError(400, "Missing warehouse count or location"));
-    }
-
-    db.run(SQL, [warehouseCount, name, location], (err) => {
-      if (err) return reject(new HttpError(400, "Internal error"));
-      const response = createWarehouseResponse(warehouseCount, name, location);
-      warehouseCount = warehouseCount + 1;
-      resolve(response);
-    });
-  });
+export async function createWarehouse(name: string, location: string) {
+  if (name == undefined || location == undefined) {
+    throw new HttpError(400, "Missing warehouse count or location");
+  }
+  try {
+    await db.run(SQL, [warehouseCount, name, location]);
+    const response = createWarehouseResponse(warehouseCount, name, location);
+    warehouseCount = warehouseCount + 1;
+    return response;
+  } catch {
+    throw new HttpError(500, "Internal Error");
+  }
 }

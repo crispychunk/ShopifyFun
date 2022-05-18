@@ -1,16 +1,14 @@
 import database from "../../database";
-import { HttpError } from "../../serializer/baseSerializer";
-import { getListResponse } from "../../serializer/inventorySerializer";
+import { HttpError } from "../../serializer/baseResponse";
+import { getListResponse } from "../../serializer/inventoryResponse";
 
-const db = database.getInstance().getSqlDatabase();
-export function getList() {
-  return new Promise((resolve, reject) => {
-    const SQL = "SELECT item_id,name,amount FROM inventory";
-
-    db.all(SQL, (err, row) => {
-      if (err) return reject(new HttpError(500, "Internal Error"));
-      const response = getListResponse(row);
-      resolve(response);
-    });
-  });
+const db = database.getInstance();
+export async function getList() {
+  const SQL = "SELECT item_id,name,amount,warehouse_id FROM inventory";
+  try {
+    const rows = await db.all(SQL, []);
+    return getListResponse(rows);
+  } catch {
+    throw new HttpError(500, "Internal Error");
+  }
 }

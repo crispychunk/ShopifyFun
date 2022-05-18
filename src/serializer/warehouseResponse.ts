@@ -1,8 +1,4 @@
-export function createWarehouseResponse(
-  warehouseCount: number,
-  name: string,
-  location: string
-) {
+export function createWarehouseResponse(warehouseCount: number, name: string, location: string) {
   return {
     data: {
       item_id: warehouseCount,
@@ -19,5 +15,11 @@ export function getWarehouseResponse(warehouse: any, items: any) {
       name: warehouse.name,
       items: items,
     },
+  };
+}
+
+export function listWarehouseResponse(warehouses: any) {
+  return {
+    data: warehouses,
   };
 }

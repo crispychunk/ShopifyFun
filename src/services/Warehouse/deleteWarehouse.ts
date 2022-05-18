@@ -1,15 +1,13 @@
 import database from "../../database";
-import { HttpError } from "../../serializer/baseSerializer";
+import { HttpError } from "../../serializer/baseResponse";
 
-const db = database.getInstance().getSqlDatabase();
+const db = database.getInstance();
 
-export function deleteWarehouse(warehouseId: number) {
-  return new Promise((resolve, reject) => {
-    const SQL = "DELETE FROM warehouse WHERE item_id=(" + warehouseId + ")";
-
-    db.run(SQL, (err) => {
-      if (err) return reject(new HttpError(500, "Internal Error"));
-      resolve(null);
-    });
-  });
+export async function deleteWarehouse(warehouseId: number) {
+  const SQL = "DELETE FROM warehouse WHERE warehouse_id=?";
+  try {
+    await db.run(SQL, [warehouseId]);
+  } catch {
+    throw new HttpError(500, "Internal Error");
+  }
 }

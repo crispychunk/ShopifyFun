@@ -8,42 +8,43 @@ export class warehouseController {
     res.send(error.message);
   }
 
-  static create(req, res) {
+  static async create(req, res) {
     const { name, location } = req.body;
-    createWarehouse(name, location)
-      .then((response) => {
-        res.send(response);
-      })
-      .catch((error) => {
-        this.sendError(res, error);
-      });
-  }
-
-  static get(req, res) {
-    const warehouseId = req.params.warehouseId;
-    getWarehouse(warehouseId)
-      .then((response) => {
-        res.send(response);
-      })
-      .catch((error) => {
-        this.sendError(res, error);
-      });
-  }
-
-  static delete(req, res) {
-    const warehouseId = req.params.warehouseId;
-    deleteWarehouse(warehouseId)
-      .then((response) => {
-        res.send(response);
-      })
-      .catch((error) => {
-        this.sendError(res, error);
-      });
-  }
-
-  static list(req, res) {
-    listWarehouses().then((response) => {
+    try {
+      const response = await createWarehouse(name, location);
       res.send(response);
-    });
+    } catch (error) {
+      this.sendError(res, error);
+    }
+  }
+
+  static async get(req, res) {
+    const warehouseId = parseInt(req.params.warehouseId);
+    try {
+      const response = await getWarehouse(warehouseId);
+      res.send(response);
+    } catch (error) {
+      this.sendError(res, error);
+    }
+  }
+
+  static async delete(req, res) {
+    const warehouseId = parseInt(req.params.warehouseId);
+    try {
+      await getWarehouse(warehouseId);
+      const response = await deleteWarehouse(warehouseId);
+      res.send(response);
+    } catch (error) {
+      this.sendError(res, error);
+    }
+  }
+
+  static async list(req, res) {
+    try {
+      const response = await listWarehouses();
+      res.send(response);
+    } catch (error) {
+      this.sendError(res, error);
+    }
   }
 }
